@@ -1,50 +1,58 @@
 package com.example.lab8;
 
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 public class CustomListTest {
+    private CustomList list;
 
-    // MockCityList method for creating a CustomList without needing a real Android context
-    public CustomList MockCityList() {
-        return new CustomList(null, new ArrayList<City>());  // Passing null for Context
+    public CustomList MockCityList(){
+        list = new CustomList(null,new ArrayList<>());
+        return list;
     }
-
     @Test
-    public void addCityTest() {
-        CustomList list = MockCityList();
-        assertEquals(0, list.getCount(), "Initial city count should be zero.");
-        City cityToAdd = new City("Nanton", "AB");
-        list.addCity(cityToAdd);  // Using the custom addCity method
-        assertEquals(1, list.getCount(), "The city was not added.");
+    public void addCityTest(){
+        list = MockCityList();
+        int listSize = list.getCount();
+        list.addCity(new City("Nanton", "AB"));
+        assertEquals(list.getCount(),listSize + 1);
     }
-
     @Test
     public void hasCityTest() {
-        CustomList list = MockCityList();
-        City cityToAdd = new City("Nanton", "AB");
-        list.addCity(cityToAdd);  // Using the custom addCity method
-        assertTrue(list.hasCity(cityToAdd), "The list should contain the added city.");
-        assertFalse(list.hasCity(new City("Calgary", "AB")), "The list should not contain a city that wasn't added.");
+        list = MockCityList();
+        list.addCity(new City("Edmonton", "AB"));
+        assertTrue(list.hasCity(new City("Edmonton", "AB")));
+        assertFalse(list.hasCity(new City("Calgary", "AB")));
+    }
+    @Test
+    public void testDeleteCityExists() {
+        list = MockCityList();
+        City city = new City("Edmonton", "AB");
+        list.addCity(city);
+        list.deleteCity(city);
+        assertFalse(list.hasCity(city));
     }
 
     @Test
-    public void deleteCityTest() {
-        CustomList list = MockCityList();
-        City cityToDelete = new City("Nanton", "AB");
-        list.addCity(cityToDelete);  // Using the custom addCity method
-        list.deleteCity(cityToDelete);
-        assertFalse(list.hasCity(cityToDelete), "The city was not deleted.");
+    public void testDeleteCityDoesNotExist() {
+        list = MockCityList();
+        City city = new City("Calgary", "AB");
+        assertThrows(NoSuchElementException.class, () -> list.deleteCity(city));
     }
-
     @Test
-    public void countCitiesTest() {
-        CustomList list = MockCityList();
-        assertEquals(0, list.getCount(), "Initial city count should be zero.");
-        list.addCity(new City("Nanton", "AB"));
+    public void testCountCities() {
+        list = MockCityList();
+        list.addCity(new City("Edmonton", "AB"));
         list.addCity(new City("Calgary", "AB"));
-        assertEquals(2, list.getCount(), "City count should reflect the number of cities added.");
+        assertEquals(2, list.getCount());
     }
+
 }
